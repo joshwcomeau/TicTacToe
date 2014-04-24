@@ -35,7 +35,7 @@ function adjustBoard() {
   var gbWidth = $("#gameboard").width();
   $("#gameboard").css('height', gbWidth+'px');
 
-  var cellHeight = $(".gamecell").height(),
+  var cellHeight = $(".gamecell").width(),
       fontSize = cellHeight * 0.85;
 
   $(".gamecell").css({
@@ -46,32 +46,65 @@ function adjustBoard() {
 
 function checkWin(row, col) {  
   
-  if (                
-    // Check for vertical win
+  if (                // Check for column win
     $("#cell1-" + col).html() == $("#cell2-" + col).html() && 
     $("#cell2-" + col).html() == $("#cell3-" + col).html() 
-    ||
-    // Check for horizontal win
+  ) {
+
+    return 'column';
+
+  } else if (         // Check for row win
     $("#cell"+ row + "-1").html() == $("#cell"+ row + "-2").html() && 
     $("#cell"+ row + "-2").html() == $("#cell"+ row + "-3").html() 
-    ||
-    // Check for diagonal wins
+  ){
+
+    return 'row';
+
+  } else if (         // Check top-left-to-bottom-right diagonal
     $("#cell1-1").html() == $("#cell2-2").html() && 
     $("#cell2-2").html() == $("#cell3-3").html() && 
     $("#cell1-1").html().length > 0 
-    ||
+  ){
+    return 'tldiag';
+  } else if (         // Check top-right-to-bottom-left diagonal
     $("#cell1-3").html() == $("#cell2-2").html() && 
     $("#cell2-2").html() == $("#cell3-1").html() &&
     $("#cell1-3").html().length > 0 
   ){
-    return 'win';
+    return 'trdiag';
   }
 
 }
 
+function gridStrike(direction, row, col) {
+  var winStyle = { backgroundColor: "#789023", color: "#EDFFAD", "z-index": 35, textShadow: "#526904" },
+      winStyleDiag = { color: "#EDFFAD", "z-index": 35, textShadow: "#526904", display: "block" };
+
+
+  if ( direction == 'column' ) {
+    $("#cell1-" + col + ", #cell2-" + col + ", #cell3-" + col).children().css(winStyle).animate({
+      height: "130%",
+      marginTop: "-15%",
+      paddingTop: "15%"
+    }, 500);
+  } else if ( direction == 'row' ) {
+    $("#cell" + row + "-1, #cell" + row + "-2, #cell" + row + "-3").children().css(winStyle).animate({
+      width: "130%",
+      marginLeft: "-15%"
+    }, 500);
+  } else if ( direction == 'tldiag') {
+    $("#cell1-1, #cell2-2, #cell3-3").children().css(winStyleDiag);
+    $("#winLineTL").slideDown(500);
+  } else if ( direction == 'trdiag') {
+    $("#cell1-3, #cell2-2, #cell3-1").children().css(winStyleDiag);
+    $("#winLineTR").slideDown(500);
+  }
+}
+
 $(document).ready(function() {
 
-  var playerTurn = 'X';
+  var playerTurn = 'X',
+      moveCounter = 1;
 
   // Load background stripes
   stripeItUp();
@@ -82,21 +115,32 @@ $(document).ready(function() {
   // Bind click event to game board cells.
   $(".gamecell").click(function() {
     if ( $(this).text().length === 0 ) {
-      $(this).html("<span class='" + playerTurn + "'>" + playerTurn + "</span>");
-      $(this).css("cursor","default");
+      // Add the X/O, remove pointer.
+      $(this).html("<span class='" + playerTurn + "'>" + playerTurn + "</span>").css("cursor","default");
 
       // Get row/column values
       var row = $(this).attr("id").substr(4,1),
           col = $(this).attr("id").substr(6,1);
 
       // Check for win
-      gameState = checkWin(row, col);
+      winCheck = checkWin(row, col);
 
-      if ( gameState == 'win') {
-        alert("Player " + playerTurn + " wins!!");
+      if ( winCheck ) {
+        gridStrike(winCheck, row, col);
+        $("#moveCount").html(moveCounter);
+        $("#winBackground").fadeIn(500, function() {
+          $("#winText").animate({
+            top: "15%"
+          }, 1000, function() {
+            $("#victorySteps").animate({
+              left: 0
+            }, 500)
+          });
+        });
       }
 
       playerTurn = swapTurn(playerTurn);
+      moveCounter++;
 
     }
   });
@@ -115,8 +159,12 @@ $(document).ready(function() {
 
 <div id="cp">
   <h1 id="gametitle">TicTacToe</h1>
+  <div id="instructions"></div>
 </div><div id="game">
   <div id="gameboard">
+    <span id="winLineTL"></span>
+    <span id="winLineTR"></span>
+
     <div><div id="cell1-1" class="gamecell"></div></div>
     <div><div id="cell1-2" class="gamecell"></div></div>
     <div><div id="cell1-3" class="gamecell"></div></div>
@@ -129,6 +177,15 @@ $(document).ready(function() {
     <div><div id="cell3-2" class="gamecell"></div></div>
     <div><div id="cell3-3" class="gamecell"></div></div>
   </div>
+  <div id="winBackground">
+    <div id="winText">
+      <h2>Good Job.</h2>
+      <h4>You're a TicTacToe master.</h4>
+    </div>
+    <p id="victorySteps">Victory in <span id="moveCount"></span> moves.</p>
+
+  </div>
 </div>
+
 </body>
 </html>
