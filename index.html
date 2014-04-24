@@ -44,10 +44,28 @@ function adjustBoard() {
   });
 }
 
-function checkWin() {
-  // Grid IDs are organized in row-column values. eg. The first cell is cell1-1.
-  // To check for winners, we'll check all 8 possible win paths for both players.
-  // We'll iterate through each row/column looking for triple of the same score, and then check diagonals.
+function checkWin(row, col) {  
+  
+  if (                
+    // Check for vertical win
+    $("#cell1-" + col).html() == $("#cell2-" + col).html() && 
+    $("#cell2-" + col).html() == $("#cell3-" + col).html() 
+    ||
+    // Check for horizontal win
+    $("#cell"+ row + "-1").html() == $("#cell"+ row + "-2").html() && 
+    $("#cell"+ row + "-2").html() == $("#cell"+ row + "-3").html() 
+    ||
+    // Check for diagonal wins
+    $("#cell1-1").html() == $("#cell2-2").html() && 
+    $("#cell2-2").html() == $("#cell3-3").html() && 
+    $("#cell1-1").html().length > 0 
+    ||
+    $("#cell1-3").html() == $("#cell2-2").html() && 
+    $("#cell2-2").html() == $("#cell3-1").html() &&
+    $("#cell1-3").html().length > 0 
+  ){
+    return 'win';
+  }
 
 }
 
@@ -65,11 +83,20 @@ $(document).ready(function() {
   $(".gamecell").click(function() {
     if ( $(this).text().length === 0 ) {
       $(this).html("<span class='" + playerTurn + "'>" + playerTurn + "</span>");
-      playerTurn = swapTurn(playerTurn);
       $(this).css("cursor","default");
 
+      // Get row/column values
+      var row = $(this).attr("id").substr(4,1),
+          col = $(this).attr("id").substr(6,1);
+
       // Check for win
-      gameState = checkWin();
+      gameState = checkWin(row, col);
+
+      if ( gameState == 'win') {
+        alert("Player " + playerTurn + " wins!!");
+      }
+
+      playerTurn = swapTurn(playerTurn);
 
     }
   });
