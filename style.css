@@ -6,7 +6,15 @@ html {
 }
 body {
   height: 100%;
+  background: #EEE;
   font-family: days-one, sans-serif;
+}
+#bgCanvas {
+  position: fixed;
+  z-index: -10;
+  opacity: 0.5;
+  top: 0px;
+  left: 0px;
 }
 
 /***************** CONTROL PANEL ****************/
@@ -60,7 +68,7 @@ body {
 
     /* Styles for X's and O's */
     text-align: center;
-    cursor: default;
+    cursor: pointer;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -69,6 +77,13 @@ body {
     user-select: none;
 
 }
+.X {
+  color: #789023;
+}
+.O {
+  color: #039EA6;
+}
+
 
 /* Specific cell radius' */
 #cell1-1 > div {

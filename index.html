@@ -3,11 +3,15 @@
 <head>
   <meta charset="utf-8">
   <title>Tic Tac Toe!</title>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-  <script src="http://use.edgefonts.net/days-one.js"></script>
+  
   <link rel="stylesheet" type="text/css" href="normalize.css">
   <link rel="stylesheet" type="text/css" href="style.css">
 
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script src="http://use.edgefonts.net/days-one.js"></script>
+  <script src="throttle.js"></script>  
+  <script src="pattern.js"></script>
   
   <!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -21,11 +25,13 @@ function swapTurn(turn) {
   }
 }
 
-$(document).ready(function() {
+function stripeItUp() {
+  $("body").append("<canvas id='bgCanvas'></canvas>");
+  var bgCanvas = document.getElementById('bgCanvas');
+  patternInit();  
+}
 
-  var playerTurn = 'X';
-
-  // Adjust CSS for game board depending on window size
+function adjustBoard() {
   var gbWidth = $("#gameboard").width();
   $("#gameboard").css('height', gbWidth+'px');
 
@@ -36,19 +42,30 @@ $(document).ready(function() {
     "font-size"   : fontSize+"px",
     "line-height" : cellHeight+"px"
   });
+}
+
+$(document).ready(function() {
+
+  var playerTurn = 'X';
+
+  // Load background stripes
+  stripeItUp();
+
+  // Adjust CSS for game board depending on window size
+  adjustBoard();
 
   // Bind click event to game board cells.
   $(".gamecell > div").click(function() {
     if ( $(this).text().length === 0 ) {
       $(this).html("<span class='" + playerTurn + "'>" + playerTurn + "</span>");
       playerTurn = swapTurn(playerTurn);
+      $(this).css("cursor","default");
     }
   });
 
-
-
-
 });
+
+
 
 
 
@@ -73,6 +90,5 @@ $(document).ready(function() {
     <div id="cell3-3" class="gamecell"><div></div></div>
   </div>
 </div>
- 
 </body>
 </html>
