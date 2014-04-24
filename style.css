@@ -53,14 +53,14 @@ body {
   border-radius: 3px;
   padding: 1px;
 }
-.gamecell {
+#gameboard > div {
   position: relative;
   float: left;
   width: 33.33333333333%;
   height: 33.33333333333%;
   padding: 1px;
 }
-  .gamecell > div {
+  .gamecell {
     width: 100%;
     height: 100%;
     border: 1px solid #DDD;
@@ -86,16 +86,16 @@ body {
 
 
 /* Specific cell radius' */
-#cell1-1 > div {
+#cell1-1 {
   border-radius: 12px 0px 0px 0px;
 }
-#cell1-3 > div {
+#cell1-3 {
   border-radius: 0px 12px 0px 0px;
 }
-#cell3-1 > div {
+#cell3-1 {
   border-radius: 0px 0px 0px 12px;
 }
-#cell3-3 > div {
+#cell3-3 {
   border-radius: 0px 0px 12px 0px;
 }
 

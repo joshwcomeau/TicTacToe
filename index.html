@@ -35,13 +35,20 @@ function adjustBoard() {
   var gbWidth = $("#gameboard").width();
   $("#gameboard").css('height', gbWidth+'px');
 
-  var cellHeight = $(".gamecell > div").height(),
+  var cellHeight = $(".gamecell").height(),
       fontSize = cellHeight * 0.85;
 
   $(".gamecell").css({
     "font-size"   : fontSize+"px",
     "line-height" : cellHeight+"px"
   });
+}
+
+function checkWin() {
+  // Grid IDs are organized in row-column values. eg. The first cell is cell1-1.
+  // To check for winners, we'll check all 8 possible win paths for both players.
+  // We'll iterate through each row/column looking for triple of the same score, and then check diagonals.
+
 }
 
 $(document).ready(function() {
@@ -55,13 +62,19 @@ $(document).ready(function() {
   adjustBoard();
 
   // Bind click event to game board cells.
-  $(".gamecell > div").click(function() {
+  $(".gamecell").click(function() {
     if ( $(this).text().length === 0 ) {
       $(this).html("<span class='" + playerTurn + "'>" + playerTurn + "</span>");
       playerTurn = swapTurn(playerTurn);
       $(this).css("cursor","default");
+
+      // Check for win
+      gameState = checkWin();
+
     }
   });
+
+
 
 });
 
@@ -77,17 +90,17 @@ $(document).ready(function() {
   <h1 id="gametitle">TicTacToe</h1>
 </div><div id="game">
   <div id="gameboard">
-    <div id="cell1-1" class="gamecell"><div></div></div>
-    <div id="cell1-2" class="gamecell"><div></div></div>
-    <div id="cell1-3" class="gamecell"><div></div></div>
+    <div><div id="cell1-1" class="gamecell"></div></div>
+    <div><div id="cell1-2" class="gamecell"></div></div>
+    <div><div id="cell1-3" class="gamecell"></div></div>
 
-    <div id="cell2-1" class="gamecell"><div></div></div>
-    <div id="cell2-2" class="gamecell"><div></div></div>
-    <div id="cell2-3" class="gamecell"><div></div></div>
+    <div><div id="cell2-1" class="gamecell"></div></div>
+    <div><div id="cell2-2" class="gamecell"></div></div>
+    <div><div id="cell2-3" class="gamecell"></div></div>
 
-    <div id="cell3-1" class="gamecell"><div></div></div>
-    <div id="cell3-2" class="gamecell"><div></div></div>
-    <div id="cell3-3" class="gamecell"><div></div></div>
+    <div><div id="cell3-1" class="gamecell"></div></div>
+    <div><div id="cell3-2" class="gamecell"></div></div>
+    <div><div id="cell3-3" class="gamecell"></div></div>
   </div>
 </div>
 </body>

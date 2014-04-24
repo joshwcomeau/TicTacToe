@@ -1,8 +1,3 @@
-
-
- 
-
-
 /*
  * patternizer.js
  * v1.01
