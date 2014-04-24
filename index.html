@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tic Tac Toe!</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="http://use.edgefonts.net/days-one.js"></script>
+  <link rel="stylesheet" type="text/css" href="normalize.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+  
+  <!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+<script>
+function swapTurn(turn) {
+  if (turn === 'X') {
+    return 'O';
+  } else {
+    return 'X';
+  }
+}
+
+$(document).ready(function() {
+
+  var playerTurn = 'X';
+
+  // Adjust CSS for game board depending on window size
+  var gbWidth = $("#gameboard").width();
+  $("#gameboard").css('height', gbWidth+'px');
+
+  var cellHeight = $(".gamecell > div").height(),
+      fontSize = cellHeight * 0.85;
+
+  $(".gamecell").css({
+    "font-size"   : fontSize+"px",
+    "line-height" : cellHeight+"px"
+  });
+
+  // Bind click event to game board cells.
+  $(".gamecell > div").click(function() {
+    if ( $(this).text().length === 0 ) {
+      $(this).html("<span class='" + playerTurn + "'>" + playerTurn + "</span>");
+      playerTurn = swapTurn(playerTurn);
+    }
+  });
+
+
+
+
+});
+
+
+
+</script>
+</head>
+<body>
+
+<div id="cp">
+  <h1 id="gametitle">TicTacToe</h1>
+</div><div id="game">
+  <div id="gameboard">
+    <div id="cell1-1" class="gamecell"><div></div></div>
+    <div id="cell1-2" class="gamecell"><div></div></div>
+    <div id="cell1-3" class="gamecell"><div></div></div>
+
+    <div id="cell2-1" class="gamecell"><div></div></div>
+    <div id="cell2-2" class="gamecell"><div></div></div>
+    <div id="cell2-3" class="gamecell"><div></div></div>
+
+    <div id="cell3-1" class="gamecell"><div></div></div>
+    <div id="cell3-2" class="gamecell"><div></div></div>
+    <div id="cell3-3" class="gamecell"><div></div></div>
+  </div>
+</div>
+ 
+</body>
+</html>

@@ -1,0 +1,89 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+  font-family: days-one, sans-serif;
+}
+
+/***************** CONTROL PANEL ****************/
+#cp {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  width: 35%;
+  height: 100%;
+  background: #333;
+  color: #FFF;
+}
+
+#gametitle {
+  padding: 25px;
+  text-align: center;
+  font-size: 60px;
+  font-weight: normal;
+}
+
+/*************** GAME ***************/
+#game {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  width: 65%;
+  height: 100%;
+}
+#gameboard {
+  position: relative;
+  width:60%;
+  height: auto; /* Set by jQuery */
+  margin: 20px auto;
+  border: 1px solid #AAA;
+  background: #FAFAFA;
+  border-radius: 3px;
+  padding: 1px;
+}
+.gamecell {
+  position: relative;
+  float: left;
+  width: 33.33333333333%;
+  height: 33.33333333333%;
+  padding: 1px;
+}
+  .gamecell > div {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #DDD;
+    background: #FFF;
+
+    /* Styles for X's and O's */
+    text-align: center;
+    cursor: default;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+/* Specific cell radius' */
+#cell1-1 > div {
+  border-radius: 12px 0px 0px 0px;
+}
+#cell1-3 > div {
+  border-radius: 0px 12px 0px 0px;
+}
+#cell3-1 > div {
+  border-radius: 0px 0px 0px 12px;
+}
+#cell3-3 > div {
+  border-radius: 0px 0px 12px 0px;
+}
+
+
+
+
