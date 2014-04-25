@@ -9,7 +9,7 @@
 
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-  <script src="http://use.edgefonts.net/days-one.js"></script>
+  <script src="http://use.edgefonts.net/actor;days-one.js"></script>
   <script src="throttle.js"></script>  
   <script src="pattern.js"></script>
   
@@ -77,8 +77,8 @@ function checkWin(row, col) {
 }
 
 function gridStrike(direction, row, col) {
-  var winStyle = { backgroundColor: "#789023", color: "#EDFFAD", "z-index": 35, textShadow: "#526904" },
-      winStyleDiag = { color: "#EDFFAD", "z-index": 35, textShadow: "#526904", display: "block" };
+  var winStyle = { backgroundColor: "#789023", color: "#EDFFAD", "z-index": 35, textShadow: "1px 1px 3px #526904" },
+      winStyleDiag = { color: "#EDFFAD", "z-index": 35, textShadow: "1px 1px 3px #526904", display: "block" };
 
 
   if ( direction == 'column' ) {
@@ -99,6 +99,26 @@ function gridStrike(direction, row, col) {
     $("#cell1-3, #cell2-2, #cell3-1").children().css(winStyleDiag);
     $("#winLineTR").slideDown(500);
   }
+}
+
+function updateMoveList(row, col, player) {
+  $("#instructions > ul").append("<li id='moveList" + row + col + "'>Player " + player + " marks spot [" + row + ", " + col + "].");
+  $("#moveList"+row+col).slideDown(500);
+}
+
+function updateWinPage(winner, moves) {
+  $("#moveCount").html(moves);
+  $("#winLetter").html(winner);
+  $("#winBackground").fadeIn(500, function() {
+    $("#winText").animate({
+      top: "15%"
+    }, 1000, function() {
+      $("#winLetter").fadeIn(1000);
+      $("#victorySteps").animate({
+        left: 0
+      }, 500)
+    });
+  });
 }
 
 $(document).ready(function() {
@@ -127,17 +147,12 @@ $(document).ready(function() {
 
       if ( winCheck ) {
         gridStrike(winCheck, row, col);
-        $("#moveCount").html(moveCounter);
-        $("#winBackground").fadeIn(500, function() {
-          $("#winText").animate({
-            top: "15%"
-          }, 1000, function() {
-            $("#victorySteps").animate({
-              left: 0
-            }, 500)
-          });
-        });
+        updateWinPage(playerTurn, moveCounter);
+        $(".gamecell").css({"cursor": "default"}).unbind("click");
       }
+
+      $("#instructions").fadeIn(200); // Show the instruction-holding UL on the first turn.
+      updateMoveList(row, col, playerTurn);
 
       playerTurn = swapTurn(playerTurn);
       moveCounter++;
@@ -158,8 +173,16 @@ $(document).ready(function() {
 <body>
 
 <div id="cp">
-  <h1 id="gametitle">TicTacToe</h1>
-  <div id="instructions"></div>
+  <h1 id="gametitle"><span class="capT">T</span>i<span class="tl6">c</span><span class="capT">T</span>a<span class="tl6">c</span><span class="capT">T</span>oe</h1>
+  <div id="instructions">
+    <ul>
+    </ul>
+  </div>
+  <div id="decorativeBar4" class="decBar"></div>
+  <div id="decorativeBar3" class="decBar"></div>
+  <div id="decorativeBar2" class="decBar"></div>
+  <div id="decorativeBar1" class="decBar"></div>
+
 </div><div id="game">
   <div id="gameboard">
     <span id="winLineTL"></span>
@@ -178,6 +201,7 @@ $(document).ready(function() {
     <div><div id="cell3-3" class="gamecell"></div></div>
   </div>
   <div id="winBackground">
+    <div id="winLetter"></div>
     <div id="winText">
       <h2>Good Job.</h2>
       <h4>You're a TicTacToe master.</h4>
