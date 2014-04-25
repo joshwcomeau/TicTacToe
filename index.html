@@ -113,12 +113,30 @@ function updateWinPage(winner, moves) {
     $("#winText").animate({
       top: "15%"
     }, 1000, function() {
+      showNewGameButton();
       $("#winLetter").fadeIn(1000);
       $("#victorySteps").animate({
         left: 0
       }, 500)
     });
   });
+}
+
+function updateTiePage() {
+  $("#tieBackground").fadeIn(500, function() {
+    $("#tieText").animate({
+      top: "15%"
+    }, 1000, function() {
+      showNewGameButton();
+    });
+    
+  });
+}
+
+function showNewGameButton() {
+  $(".newGameButton").animate({
+    bottom: "0px"
+  }, 1000);
 }
 
 $(document).ready(function() {
@@ -135,12 +153,17 @@ $(document).ready(function() {
   // Bind click event to game board cells.
   $(".gamecell").click(function() {
     if ( $(this).text().length === 0 ) {
-      // Add the X/O, remove pointer.
+
+      $("#instructions").fadeIn(200); // Show the instruction-holding UL on the first turn.
+
+      // Add the X/O, remove cursor pointer.
       $(this).html("<span class='" + playerTurn + "'>" + playerTurn + "</span>").css("cursor","default");
 
       // Get row/column values
       var row = $(this).attr("id").substr(4,1),
           col = $(this).attr("id").substr(6,1);
+
+      updateMoveList(row, col, playerTurn);
 
       // Check for win
       winCheck = checkWin(row, col);
@@ -151,8 +174,11 @@ $(document).ready(function() {
         $(".gamecell").css({"cursor": "default"}).unbind("click");
       }
 
-      $("#instructions").fadeIn(200); // Show the instruction-holding UL on the first turn.
-      updateMoveList(row, col, playerTurn);
+      // Check for tie
+      if ( moveCounter == 9) {
+        updateTiePage();
+      }
+
 
       playerTurn = swapTurn(playerTurn);
       moveCounter++;
@@ -200,6 +226,7 @@ $(document).ready(function() {
     <div><div id="cell3-2" class="gamecell"></div></div>
     <div><div id="cell3-3" class="gamecell"></div></div>
   </div>
+
   <div id="winBackground">
     <div id="winLetter"></div>
     <div id="winText">
@@ -208,8 +235,21 @@ $(document).ready(function() {
     </div>
     <p id="victorySteps">Victory in <span id="moveCount"></span> moves.</p>
 
+
   </div>
+
+  <div id="tieBackground">
+    <div id="tieText">
+      <h2>You guys suck.</h2>
+      <h4>Ties are lame. Play harder next time!</h4>
+    </div>
+  </div>
+
 </div>
+
+<a href="" class="newGameButton">
+  - Play Again -
+</a>
 
 </body>
 </html>
