@@ -281,7 +281,7 @@ body {
 
 .newGameButton {
   position: absolute;
-  display: block;
+  display: none;
   z-index: 500;
   bottom: 0%;
   left: 50%;
