@@ -235,7 +235,7 @@ body {
       font-size: 1.6em;
     }
   #winLetter {
-    display: none;
+    
     position: absolute;
     z-index: 2;
     left: -70px;
@@ -244,7 +244,7 @@ body {
     font-size: 600px;
     text-align: center;
     color: #FFF;
-    opacity: 0.25;
+    opacity: 0;
     text-shadow: 0px 0px 40px #000;
   }
 
@@ -283,7 +283,7 @@ body {
   position: absolute;
   display: block;
   z-index: 500;
-  bottom: -25%;
+  bottom: 0%;
   left: 50%;
   width: 50%;
   margin-left: -25%;
@@ -295,6 +295,7 @@ body {
   font-size: 60px;
   border-radius: 40px 40px 0px 0px;
   box-shadow: 0px -3px 25px rgba(0,0,0,0.25);
+  opacity: 0;
 }
 
 
@@ -313,6 +314,31 @@ body {
 #cell3-3 {
   border-radius: 0px 0px 12px 0px;
 }
+
+
+
+
+
+
+@-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+@-webkit-keyframes fadeInPart { from { opacity:0; } to { opacity:0.25; } }
+@-moz-keyframes fadeInPart { from { opacity:0; } to { opacity:0.25; } }
+@keyframes fadeInPart { from { opacity:0; } to { opacity:0.25; } }
+ 
+
+
+
+
+
+
+
+
+
+
+
 
 
 

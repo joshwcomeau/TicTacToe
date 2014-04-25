@@ -17,12 +17,29 @@
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
 <script>
+var fadeInObject = {
+    "-webkit-animation": "fadeIn 1s", /* Safari and Chrome */
+       "-moz-animation": "fadeIn 1s", /* Firefox */
+        "-ms-animation": "fadeIn 1s", /* Internet Explorer */
+         "-o-animation": "fadeIn 1s", /* Opera */
+            "animation": "fadeIn 1s",
+    "-webkit-animation-fill-mode": "forwards", 
+    "-moz-animation-fill-mode": "forwards",
+    "animation-fill-mode": "forwards"
+};
+var fadeInPartObject = {
+    "-webkit-animation": "fadeInPart 4s", /* Safari and Chrome */
+       "-moz-animation": "fadeInPart 4s", /* Firefox */
+        "-ms-animation": "fadeInPart 4s", /* Internet Explorer */
+         "-o-animation": "fadeInPart 4s", /* Opera */
+            "animation": "fadeInPart 4s",
+    "-webkit-animation-fill-mode": "forwards", 
+    "-moz-animation-fill-mode": "forwards",
+    "animation-fill-mode": "forwards"
+};
 function swapTurn(turn) {
-  if (turn === 'X') {
-    return 'O';
-  } else {
-    return 'X';
-  }
+  if (turn === 'X') return 'O';
+  else return 'X';
 }
 
 function stripeItUp() {
@@ -65,13 +82,17 @@ function checkWin(row, col) {
     $("#cell2-2").html() == $("#cell3-3").html() && 
     $("#cell1-1").html().length > 0 
   ){
+
     return 'tldiag';
+
   } else if (         // Check top-right-to-bottom-left diagonal
     $("#cell1-3").html() == $("#cell2-2").html() && 
     $("#cell2-2").html() == $("#cell3-1").html() &&
     $("#cell1-3").html().length > 0 
   ){
+
     return 'trdiag';
+
   }
 
 }
@@ -108,16 +129,12 @@ function updateMoveList(row, col, player) {
 
 function updateWinPage(winner, moves) {
   $("#moveCount").html(moves);
-  $("#winLetter").html(winner);
   $("#winBackground").fadeIn(500, function() {
     $("#winText").animate({
       top: "15%"
     }, 1000, function() {
       showNewGameButton();
-      $("#winLetter").fadeIn(1000);
-      $("#victorySteps").animate({
-        left: 0
-      }, 500)
+      $("#winLetter").html(winner).css(fadeInPartObject);
     });
   });
 }
@@ -134,9 +151,7 @@ function updateTiePage() {
 }
 
 function showNewGameButton() {
-  $(".newGameButton").animate({
-    bottom: "0px"
-  }, 1000);
+  $(".newGameButton").css(fadeInObject);
 }
 
 $(document).ready(function() {
@@ -217,7 +232,6 @@ $(document).ready(function() {
     <div><div id="cell1-1" class="gamecell"></div></div>
     <div><div id="cell1-2" class="gamecell"></div></div>
     <div><div id="cell1-3" class="gamecell"></div></div>
-
     <div><div id="cell2-1" class="gamecell"></div></div>
     <div><div id="cell2-2" class="gamecell"></div></div>
     <div><div id="cell2-3" class="gamecell"></div></div>
@@ -233,7 +247,6 @@ $(document).ready(function() {
       <h2>Good Job.</h2>
       <h4>You're a TicTacToe master.</h4>
     </div>
-    <p id="victorySteps">Victory in <span id="moveCount"></span> moves.</p>
 
 
   </div>
