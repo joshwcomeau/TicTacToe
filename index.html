@@ -187,10 +187,7 @@ $(document).ready(function() {
         gridStrike(winCheck, row, col);
         updateWinPage(playerTurn, moveCounter);
         $(".gamecell").css({"cursor": "default"}).unbind("click");
-      }
-
-      // Check for tie
-      if ( moveCounter == 9) {
+      } else if ( moveCounter == 9) {
         updateTiePage();
       }
 
