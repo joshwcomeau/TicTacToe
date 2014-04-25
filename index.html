@@ -162,8 +162,49 @@ function showNewGameButton() {
 function markCell(cell, mark) {
   // Put an O in that cell
   $("#"+cell).html("<span class='" + mark + "'>" + mark + "</span>").css("cursor","default");
+}
 
+function buildMatrix() {
+  var row, col, contents;
+  var field = [];
+  for ( row=1; row<=3; row++ ) {
+    fieldrow = []
+    for ( col=1; col<=3; col++ ) {
+      contents = $("#cell" + row + "-" + col).html();
+      if ( contents == '<span class="X">X</span>' ) {
+        fieldrow.push("X");
+      } else if ( contents == '<span class="O">O</span>' ) {
+        fieldrow.push("O");
+      } else {
+        fieldrow.push("");
+      }
+    }
+    field.push(fieldrow);
+  }
+  return field;
+}
 
+function computerPick() {
+  // Check if the player is about to score
+  // Check if any row or column has 2 X's.
+  var emptyCell;
+  var xCount = 0;
+  for ( var col=1; col<=3; col++ ) {
+    if ( $("#cell1-1").html() == '<span class="X">X</span>' ) {
+      xCount += 1;
+    } else {
+      emptyCell = "cell1-"+col;
+    }
+  }
+  if ( xCount == 2 ) {
+    markCell(emptyCell, "O");
+    return true;
+  }
+
+  // If all else fails, pick randomly
+  var randIndex = Math.floor(Math.random() * cells.length);
+  var chosenCell = cells[randIndex];
+  cells.splice(randIndex, 1);
 
 }
 
@@ -243,6 +284,8 @@ $(document).ready(function() {
           } else if ( moveCounter == 9) {
             updateTiePage();
           }
+
+          buildMatrix();
 
 
           moveCounter++;    
