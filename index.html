@@ -18,6 +18,7 @@
   <![endif]-->
 <script>
 var fadeInObject = {
+    "display": "block",
     "-webkit-animation": "fadeIn 1s", /* Safari and Chrome */
        "-moz-animation": "fadeIn 1s", /* Firefox */
         "-ms-animation": "fadeIn 1s", /* Internet Explorer */
@@ -65,14 +66,16 @@ function checkWin(row, col) {
   
   if (                // Check for column win
     $("#cell1-" + col).html() == $("#cell2-" + col).html() && 
-    $("#cell2-" + col).html() == $("#cell3-" + col).html() 
+    $("#cell2-" + col).html() == $("#cell3-" + col).html() &&
+    $("#cell1-" + col).html().length > 0 
   ) {
 
     return 'column';
 
   } else if (         // Check for row win
-    $("#cell"+ row + "-1").html() == $("#cell"+ row + "-2").html() && 
-    $("#cell"+ row + "-2").html() == $("#cell"+ row + "-3").html() 
+    $("#cell" + row + "-1").html() == $("#cell" + row + "-2").html() && 
+    $("#cell" + row + "-2").html() == $("#cell" + row + "-3").html() &&
+    $("#cell" + row + "-1").html().length > 0 
   ){
 
     return 'row';
@@ -92,6 +95,8 @@ function checkWin(row, col) {
   ){
 
     return 'trdiag';
+
+  } else {
 
   }
 
@@ -154,42 +159,18 @@ function showNewGameButton() {
   $(".newGameButton").css(fadeInObject);
 }
 
-function computerTurn(cells) {
-  // Find a random cell to occupy
-  var randIndex = Math.floor(Math.random() * cells.length);
-  var chosenCell = cells[randIndex];
-  
-  // Delete it, we've used it.
-  cells.splice(randIndex, 1);
-
+function markCell(cell, mark) {
   // Put an O in that cell
-  $("#"+chosenCell).html("<span class='O'>O</span>").css("cursor","default");
-
-  // Get row/column values
-  var row = chosenCell.substr(4,1),
-      col = chosenCell.substr(6,1);
-
-  updateMoveList(row, col, "Computer");
-
-  // Check for win
-  winCheck = checkWin(row, col);
-
-  if ( winCheck ) {
-    gridStrike(winCheck, row, col);
-    updateWinPage("Computer", moveCounter);
-    $(".gamecell").css({"cursor": "default"}).unbind("click");
-  } else if ( moveCounter == 9) {
-    updateTiePage();
-  }
+  $("#"+cell).html("<span class='" + mark + "'>" + mark + "</span>").css("cursor","default");
 
 
-  moveCounter++;
 
 }
 
+
 $(document).ready(function() {
 
-  var playerTurn = 'X',
+  var playerTurn = true,
       moveCounter = 1,
       cells = ['cell1-1', 'cell1-2', 'cell1-3', 
                'cell2-1', 'cell2-2', 'cell2-3', 
@@ -203,19 +184,22 @@ $(document).ready(function() {
 
   // Bind click event to game board cells.
   $(".gamecell").click(function() {
-    if ( $(this).text().length === 0 ) {
+    if ( $(this).text().length === 0 && playerTurn) {
 
       $("#instructions").fadeIn(200); // Show the instruction-holding UL on the first turn.
 
-      // Add the X, remove cursor pointer.
-      $(this).html("<span class='" + playerTurn + "'>" + playerTurn + "</span>").css("cursor","default");
+      // Get cell ID
+      cellID = $(this).attr("id");
+      
+      // Add the X to the board
+      markCell(cellID, "X");
 
       // Remove the associated cell from the cells array
       cells.splice(cells.indexOf($(this).attr("id")), 1);
 
       // Get row/column values
-      var row = $(this).attr("id").substr(4,1),
-          col = $(this).attr("id").substr(6,1);
+      var row = cellID.substr(4,1),
+          col = cellID.substr(6,1);
 
       updateMoveList(row, col, "Human");
 
@@ -224,16 +208,48 @@ $(document).ready(function() {
 
       if ( winCheck ) {
         gridStrike(winCheck, row, col);
-        updateWinPage(playerTurn, moveCounter);
+        updateWinPage("X", moveCounter);
         $(".gamecell").css({"cursor": "default"}).unbind("click");
       } else if ( moveCounter == 9) {
         updateTiePage();
+      } else {
+
+        moveCounter++;
+
+        //////// COMPUTER TURN ////////////
+        playerTurn = false;
+
+        // Find a random cell for computer to occupy, and remove it from the array.
+        var randIndex = Math.floor(Math.random() * cells.length);
+        var chosenCell = cells[randIndex];
+        cells.splice(randIndex, 1);
+
+        setTimeout( function() {
+          markCell(chosenCell, "O");
+          playerTurn = true;
+          // Get row/column values
+          var row = chosenCell.substr(4,1),
+              col = chosenCell.substr(6,1);
+
+          updateMoveList(row, col, "Computer");
+
+          // Check for win
+          winCheck = checkWin(row, col);
+
+          if ( winCheck ) {
+            gridStrike(winCheck, row, col);
+            updateWinPage("O", moveCounter);
+            $(".gamecell").css({"cursor": "default"}).unbind("click");
+          } else if ( moveCounter == 9) {
+            updateTiePage();
+          }
+
+
+          moveCounter++;    
+
+        }, 500);
+
       }
-
-
-      moveCounter++;
-
-      computerTurn(cells);
 
 
 
@@ -271,6 +287,7 @@ $(document).ready(function() {
     <div><div id="cell1-1" class="gamecell"></div></div>
     <div><div id="cell1-2" class="gamecell"></div></div>
     <div><div id="cell1-3" class="gamecell"></div></div>
+    
     <div><div id="cell2-1" class="gamecell"></div></div>
     <div><div id="cell2-2" class="gamecell"></div></div>
     <div><div id="cell2-3" class="gamecell"></div></div>

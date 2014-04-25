@@ -102,7 +102,7 @@ body {
   #decorativeBar4 {
     background: #E54C29;
     height: 40%;
-  opacity: 0.7;
+    opacity: 0.7;
   }
 /*************** GAME ***************/
 #game {
@@ -281,7 +281,7 @@ body {
 
 .newGameButton {
   position: absolute;
-  display: block;
+  display: none;
   z-index: 500;
   bottom: 0%;
   left: 50%;
