@@ -123,7 +123,7 @@ function gridStrike(direction, row, col) {
 }
 
 function updateMoveList(row, col, player) {
-  $("#instructions > ul").append("<li id='moveList" + row + col + "'>Player " + player + " marks spot [" + row + ", " + col + "].");
+  $("#instructions > ul").append("<li id='moveList" + row + col + "'>" + player + " marks spot [" + row + ", " + col + "].");
   $("#moveList"+row+col).slideDown(500);
 }
 
@@ -154,10 +154,46 @@ function showNewGameButton() {
   $(".newGameButton").css(fadeInObject);
 }
 
+function computerTurn(cells) {
+  // Find a random cell to occupy
+  var randIndex = Math.floor(Math.random() * cells.length);
+  var chosenCell = cells[randIndex];
+  
+  // Delete it, we've used it.
+  cells.splice(randIndex, 1);
+
+  // Put an O in that cell
+  $("#"+chosenCell).html("<span class='O'>O</span>").css("cursor","default");
+
+  // Get row/column values
+  var row = chosenCell.substr(4,1),
+      col = chosenCell.substr(6,1);
+
+  updateMoveList(row, col, "Computer");
+
+  // Check for win
+  winCheck = checkWin(row, col);
+
+  if ( winCheck ) {
+    gridStrike(winCheck, row, col);
+    updateWinPage("Computer", moveCounter);
+    $(".gamecell").css({"cursor": "default"}).unbind("click");
+  } else if ( moveCounter == 9) {
+    updateTiePage();
+  }
+
+
+  moveCounter++;
+
+}
+
 $(document).ready(function() {
 
   var playerTurn = 'X',
-      moveCounter = 1;
+      moveCounter = 1,
+      cells = ['cell1-1', 'cell1-2', 'cell1-3', 
+               'cell2-1', 'cell2-2', 'cell2-3', 
+               'cell3-1', 'cell3-2', 'cell3-3' ];
 
   // Load background stripes
   stripeItUp();
@@ -171,14 +207,17 @@ $(document).ready(function() {
 
       $("#instructions").fadeIn(200); // Show the instruction-holding UL on the first turn.
 
-      // Add the X/O, remove cursor pointer.
+      // Add the X, remove cursor pointer.
       $(this).html("<span class='" + playerTurn + "'>" + playerTurn + "</span>").css("cursor","default");
+
+      // Remove the associated cell from the cells array
+      cells.splice(cells.indexOf($(this).attr("id")), 1);
 
       // Get row/column values
       var row = $(this).attr("id").substr(4,1),
           col = $(this).attr("id").substr(6,1);
 
-      updateMoveList(row, col, playerTurn);
+      updateMoveList(row, col, "Human");
 
       // Check for win
       winCheck = checkWin(row, col);
@@ -192,8 +231,11 @@ $(document).ready(function() {
       }
 
 
-      playerTurn = swapTurn(playerTurn);
       moveCounter++;
+
+      computerTurn(cells);
+
+
 
     }
   });
