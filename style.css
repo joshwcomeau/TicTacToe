@@ -287,7 +287,7 @@ body {
   left: 50%;
   width: 50%;
   margin-left: -25%;
-  background: #333;
+  background: rgba(0,0,0,0.45);
   padding: 25px;
   color: #FFF;
   text-decoration: none;
@@ -296,7 +296,12 @@ body {
   border-radius: 40px 40px 0px 0px;
   box-shadow: 0px -3px 25px rgba(0,0,0,0.25);
   opacity: 0;
+  transition: 0.15s;
 }
+  .newGameButton:hover {
+    background: rgba(20,20,20,0.9);
+    transition: 0.25s;
+  }
 
 
 
@@ -320,7 +325,7 @@ body {
 
 
 
-@-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@-webkit-keyframes fadeIn { from { opacity:0; margin-bottom: -75px; } to { opacity:1; margin-bottom: 0px; } }
 @-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 

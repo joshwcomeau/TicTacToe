@@ -132,14 +132,14 @@ function updateMoveList(row, col, player) {
   $("#moveList"+row+col).slideDown(500);
 }
 
-function updateWinPage(winner, moves) {
+function updateWinPage(moves) {
   $("#moveCount").html(moves);
   $("#winBackground").fadeIn(500, function() {
     $("#winText").animate({
       top: "15%"
     }, 1000, function() {
       showNewGameButton();
-      $("#winLetter").html(winner).css(fadeInPartObject);
+      // $("#winLetter").html(winner).css(fadeInPartObject);
     });
   });
 }
@@ -165,7 +165,7 @@ function markCell(cell, mark) {
 }
 
 function buildMatrix() {
-  var row, col, contents;
+  var row, col, contents, fieldrow;
   var field = [];
   for ( row=1; row<=3; row++ ) {
     fieldrow = []
@@ -184,38 +184,125 @@ function buildMatrix() {
   return field;
 }
 
+function findEmpty(field) {
+  var row, col, contents;
+  var emptyList = [];
+
+
+  for ( row=1; row<=3; row++ ) {
+    for ( col=1; col<=3; col++ ) {
+      if ( field[row-1][col-1] == '' ) {
+        emptyList.push( "cell"+row+"-"+col );
+      }
+    }
+  }
+
+  return emptyList;
+}
+function countInArray(array, what) {
+    var count = 0;
+    for (var i = 0; i < array.length; i++) {
+        if (array[i] === what) {
+            count++;
+        }
+    }
+    return count;
+}
+
 function computerPick() {
+
+  field = buildMatrix();
+  empty_field = findEmpty(field);
+
   // Check if the player is about to score
   // Check if any row or column has 2 X's.
   var emptyCell;
-  var xCount = 0;
-  for ( var col=1; col<=3; col++ ) {
-    if ( $("#cell1-1").html() == '<span class="X">X</span>' ) {
-      xCount += 1;
-    } else {
-      emptyCell = "cell1-"+col;
+
+  // DEFENSIVE. Check if we're about to lose.
+
+  var rowCounter = 1
+  for ( row in field ) {
+    // Check Row
+    if ( countInArray(field[row], "X") == 2 && countInArray(field[row], "") == 1 ) {
+      return "cell"+rowCounter+"-"+(field[row].indexOf("")+1);
     }
+
+    // Check column
+    var columnArray = [field[0][rowCounter-1], field[1][rowCounter-1], field[2][rowCounter-1]];
+    if ( countInArray(columnArray, "X") == 2 && countInArray(columnArray, "") == 1 ) {
+      return "cell"+(columnArray.indexOf("")+1)+"-"+rowCounter;
+    }
+
+    rowCounter++
   }
-  if ( xCount == 2 ) {
-    markCell(emptyCell, "O");
-    return true;
+
+  // Check diagonals
+  lrDiagArray = [ field[0][0], field[1][1], field[2][2] ];
+  if ( countInArray(lrDiagArray, "X") == 2 && countInArray(lrDiagArray, "") == 1 ) {
+    return "cell"+(lrDiagArray.indexOf("")+1)+"-"+(lrDiagArray.indexOf("")+1);
   }
+
+  // COLUMNS
+
+
+  // for ( var row=1; row<=3; row++ ) {
+  //   var xCount = 0, emptyCell = undefined;
+  //   for ( var col=1; col<=3; col++ ) {
+  //     if ( $("#cell" + row + "-" + col).html() == '<span class="X">X</span>' ) {
+  //       console.log("Adding 1!")
+  //       xCount += 1;
+  //     } else if ($("#cell" + row + "-" + col).html() == '<span class="O">O</span>') {
+        
+  //     } else {
+  //       emptyCell = "cell" + row + "-" + col;
+  //     }
+  //   }
+  //   if ( xCount == 2 && emptyCell) {
+  //     console.log ("Uh oh!")
+  //     return emptyCell;
+  //   }
+
+  // }
 
   // If all else fails, pick randomly
-  var randIndex = Math.floor(Math.random() * cells.length);
-  var chosenCell = cells[randIndex];
-  cells.splice(randIndex, 1);
+  var randIndex = Math.floor(Math.random() * empty_field.length);
+  return empty_field[randIndex];
 
+
+}
+
+function pseudoComputerThinkTime() {
+  return Math.floor(Math.random() * 1000 + 100);
+}
+
+function playTurn(player, cell, moveCounter) {
+  // Get row/column values
+  var row = cell.substr(4,1),
+      col = cell.substr(6,1);
+
+  updateMoveList(row, col, player);
+
+  // Check for win
+  winCheck = checkWin(row, col);
+
+  if ( winCheck ) {
+    gridStrike(winCheck, row, col);
+    updateWinPage(moveCounter);
+    $(".gamecell").css({"cursor": "default"}).unbind("click");
+    return true;
+  } else if ( moveCounter == 9) {
+    updateTiePage();  
+    return true;
+  } else {
+    return false;
+  }
 }
 
 
 $(document).ready(function() {
 
   var playerTurn = true,
-      moveCounter = 1,
-      cells = ['cell1-1', 'cell1-2', 'cell1-3', 
-               'cell2-1', 'cell2-2', 'cell2-3', 
-               'cell3-1', 'cell3-2', 'cell3-3' ];
+      moveCounter = 1;
 
   // Load background stripes
   stripeItUp();
@@ -223,11 +310,14 @@ $(document).ready(function() {
   // Adjust CSS for game board depending on window size
   adjustBoard();
 
+
   // Bind click event to game board cells.
   $(".gamecell").click(function() {
     if ( $(this).text().length === 0 && playerTurn) {
 
       $("#instructions").fadeIn(200); // Show the instruction-holding UL on the first turn.
+
+      
 
       // Get cell ID
       cellID = $(this).attr("id");
@@ -235,64 +325,34 @@ $(document).ready(function() {
       // Add the X to the board
       markCell(cellID, "X");
 
-      // Remove the associated cell from the cells array
-      cells.splice(cells.indexOf($(this).attr("id")), 1);
+      var gameOver = playTurn("Human", cellID, moveCounter);
 
-      // Get row/column values
-      var row = cellID.substr(4,1),
-          col = cellID.substr(6,1);
-
-      updateMoveList(row, col, "Human");
-
-      // Check for win
-      winCheck = checkWin(row, col);
-
-      if ( winCheck ) {
-        gridStrike(winCheck, row, col);
-        updateWinPage("X", moveCounter);
-        $(".gamecell").css({"cursor": "default"}).unbind("click");
-      } else if ( moveCounter == 9) {
-        updateTiePage();
-      } else {
-
+      if ( !gameOver ) {
         moveCounter++;
 
         //////// COMPUTER TURN ////////////
+        
         playerTurn = false;
 
-        // Find a random cell for computer to occupy, and remove it from the array.
-        var randIndex = Math.floor(Math.random() * cells.length);
-        var chosenCell = cells[randIndex];
-        cells.splice(randIndex, 1);
+        chosenCell = computerPick();
+
 
         setTimeout( function() {
+          // After the computer has a faked moment to think, mark the 'O'.
           markCell(chosenCell, "O");
+          playTurn("Computer", chosenCell, moveCounter);
+
           playerTurn = true;
-          // Get row/column values
-          var row = chosenCell.substr(4,1),
-              col = chosenCell.substr(6,1);
-
-          updateMoveList(row, col, "Computer");
-
-          // Check for win
-          winCheck = checkWin(row, col);
-
-          if ( winCheck ) {
-            gridStrike(winCheck, row, col);
-            updateWinPage("O", moveCounter);
-            $(".gamecell").css({"cursor": "default"}).unbind("click");
-          } else if ( moveCounter == 9) {
-            updateTiePage();
-          }
-
-          buildMatrix();
+          moveCounter++;  
 
 
-          moveCounter++;    
+        }, pseudoComputerThinkTime() );
 
-        }, 500);
 
       }
+
+
+
 
 
 
