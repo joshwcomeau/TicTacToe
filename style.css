@@ -210,7 +210,7 @@ body {
     #winText h2 {
       width: 40%;
       border-bottom: 5px solid #3192AD;
-      font-size: 90px;
+      font-size: 80px;
       font-weight: normal;
     }
     #winText h4 {
@@ -248,7 +248,7 @@ body {
     text-shadow: 0px 0px 40px #000;
   }
 
-#tieBackground {
+#loseBackground {
   display: none;
   z-index: 10;
   position: fixed;
@@ -257,6 +257,36 @@ body {
   width: 100%;
   height: 100%;
   background: #8C2300;
+}
+  #loseText {
+    position: relative;
+    z-index: 5;
+    top: -50%;
+    height: 50%;
+    left: 3%;
+    color: #FFF;
+  }
+    #loseText h2 {
+      width: 40%;
+      border-bottom: 5px solid #BA451E;
+      font-size: 90px;
+      font-weight: normal;
+    }
+    #loseText h4 {
+      letter-spacing: -1px;
+      font-size: 26px;
+      margin: 20px;
+      font-family: actor, sans-serif;
+    }
+#tieBackground {
+  display: none;
+  z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #333333;
 }
   #tieText {
     position: relative;
@@ -268,8 +298,8 @@ body {
   }
     #tieText h2 {
       width: 40%;
-      border-bottom: 5px solid #BA451E;
-      font-size: 90px;
+      border-bottom: 5px solid #555555;
+      font-size: 80px;
       font-weight: normal;
     }
     #tieText h4 {

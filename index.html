@@ -38,10 +38,6 @@ var fadeInPartObject = {
     "-moz-animation-fill-mode": "forwards",
     "animation-fill-mode": "forwards"
 };
-function swapTurn(turn) {
-  if (turn === 'X') return 'O';
-  else return 'X';
-}
 
 function stripeItUp() {
   $("body").append("<canvas id='bgCanvas'></canvas>");
@@ -144,6 +140,16 @@ function updateWinPage(moves) {
   });
 }
 
+function updateLosePage() {
+  $("#loseBackground").fadeIn(500, function() {
+    $("#loseText").animate({
+      top: "15%"
+    }, 1000, function() {
+      showNewGameButton();
+    });
+  });
+}
+
 function updateTiePage() {
   $("#tieBackground").fadeIn(500, function() {
     $("#tieText").animate({
@@ -154,6 +160,8 @@ function updateTiePage() {
     
   });
 }
+
+
 
 function showNewGameButton() {
   $(".newGameButton").css(fadeInObject);
@@ -214,55 +222,72 @@ function computerPick() {
   field = buildMatrix();
   empty_field = findEmpty(field);
 
-  // Check if the player is about to score
-  // Check if any row or column has 2 X's.
-  var emptyCell;
+  var emptyCell,
+      debug = 1,
+      rowCounter = 1;
 
-  // DEFENSIVE. Check if we're about to lose.
+  var tlDiagArray = [ field[0][0], field[1][1], field[2][2] ],
+      trDiagArray = [ field[0][2], field[1][1], field[2][0] ];
 
-  var rowCounter = 1
+  // OFFENSIVE CHECKS FIRST. See if we can win this round!
+  for ( var row in field ) {
+
+    // ROW - Offense
+    if ( countInArray(field[row], "O") == 2 && countInArray(field[row], "") == 1 ) {
+      if (debug) { console.log("Offense, row") }
+      return "cell"+rowCounter+"-"+(field[row].indexOf("")+1);
+    }
+    // COL - Offense 
+    var columnArray = [field[0][rowCounter-1], field[1][rowCounter-1], field[2][rowCounter-1]];
+    if ( countInArray(columnArray, "O") == 2 && countInArray(columnArray, "") == 1 ) {
+      if (debug) { console.log("Offense, col") }
+      return "cell"+(columnArray.indexOf("")+1)+"-"+rowCounter;
+    } 
+    rowCounter++;
+  }
+
+  // DIAGONALS - Offense
+
+  if ( countInArray(tlDiagArray, "O") == 2 && countInArray(tlDiagArray, "") == 1 ) {
+    if (debug) { console.log("Offense, TL-diag") }
+    return "cell"+(tlDiagArray.indexOf("")+1)+"-"+(tlDiagArray.indexOf("")+1);
+  } 
+  if ( countInArray(trDiagArray, "O") == 2 && countInArray(trDiagArray, "") == 1 ) {
+    if (debug) { console.log("Offense, TR-diag") }
+    return "cell"+(trDiagArray.indexOf("")+1)+"-"+(3-trDiagArray.indexOf(""));
+  }
+
+  // DEFENSE CHECKS. Make sure the human isn't about to win!
+
+  // Reset row-counter, restart loop for defense.
+  rowCounter = 1;
   for ( row in field ) {
-    // Check Row
+    // ROW - Defense
     if ( countInArray(field[row], "X") == 2 && countInArray(field[row], "") == 1 ) {
+      if (debug) { console.log("Defense, row") }
       return "cell"+rowCounter+"-"+(field[row].indexOf("")+1);
     }
 
-    // Check column
+    // COL - Defense
     var columnArray = [field[0][rowCounter-1], field[1][rowCounter-1], field[2][rowCounter-1]];
     if ( countInArray(columnArray, "X") == 2 && countInArray(columnArray, "") == 1 ) {
+      if (debug) { console.log("Defense, col") }
       return "cell"+(columnArray.indexOf("")+1)+"-"+rowCounter;
     }
-
-    rowCounter++
+    rowCounter++;
   }
+
 
   // Check diagonals
-  lrDiagArray = [ field[0][0], field[1][1], field[2][2] ];
-  if ( countInArray(lrDiagArray, "X") == 2 && countInArray(lrDiagArray, "") == 1 ) {
-    return "cell"+(lrDiagArray.indexOf("")+1)+"-"+(lrDiagArray.indexOf("")+1);
+  if ( countInArray(tlDiagArray, "X") == 2 && countInArray(tlDiagArray, "") == 1 ) {
+    if (debug) { console.log("Defense, TL-diag") }
+    return "cell"+(tlDiagArray.indexOf("")+1)+"-"+(tlDiagArray.indexOf("")+1);
   }
 
-  // COLUMNS
-
-
-  // for ( var row=1; row<=3; row++ ) {
-  //   var xCount = 0, emptyCell = undefined;
-  //   for ( var col=1; col<=3; col++ ) {
-  //     if ( $("#cell" + row + "-" + col).html() == '<span class="X">X</span>' ) {
-  //       console.log("Adding 1!")
-  //       xCount += 1;
-  //     } else if ($("#cell" + row + "-" + col).html() == '<span class="O">O</span>') {
-        
-  //     } else {
-  //       emptyCell = "cell" + row + "-" + col;
-  //     }
-  //   }
-  //   if ( xCount == 2 && emptyCell) {
-  //     console.log ("Uh oh!")
-  //     return emptyCell;
-  //   }
-
-  // }
+  if ( countInArray(trDiagArray, "X") == 2 && countInArray(trDiagArray, "") == 1 ) {
+    if (debug) { console.log("Defense, TR-diag") }
+    return "cell"+(trDiagArray.indexOf("")+1)+"-"+(3-trDiagArray.indexOf(""));
+  }
 
   // If all else fails, pick randomly
   var randIndex = Math.floor(Math.random() * empty_field.length);
@@ -287,7 +312,11 @@ function playTurn(player, cell, moveCounter) {
 
   if ( winCheck ) {
     gridStrike(winCheck, row, col);
-    updateWinPage(moveCounter);
+    if ( player == 'Human') {
+      updateWinPage(moveCounter);
+    } else {
+      updateLosePage();
+    }
     $(".gamecell").css({"cursor": "default"}).unbind("click");
     return true;
   } else if ( moveCounter == 9) {
@@ -401,10 +430,20 @@ $(document).ready(function() {
   </div>
 
   <div id="winBackground">
-    <div id="winLetter"></div>
+    <div id="winLetter">X</div>
     <div id="winText">
-      <h2>Good Job.</h2>
-      <h4>You're a TicTacToe master.</h4>
+      <h2>Game Over. <br>User Wins.</h2>
+      <h4>You showed that computer how it's done!</h4>
+    </div>
+
+
+  </div>
+
+  <div id="loseBackground">
+    <div id="loseLetter">O</div>
+    <div id="loseText">
+      <h2>You Lose.</h2>
+      <h4>You got Tic-Tac-T'owned.</h4>
     </div>
 
 
@@ -412,7 +451,7 @@ $(document).ready(function() {
 
   <div id="tieBackground">
     <div id="tieText">
-      <h2>You guys suck.</h2>
+      <h2>Bleh. Tie.</h2>
       <h4>Ties are lame. Play harder next time!</h4>
     </div>
   </div>
