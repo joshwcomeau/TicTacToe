@@ -188,6 +188,25 @@ function findEmpty(field) {
 
   return emptyList;
 }
+
+function findEmptyCorner(field) {
+  var row, col, contents;
+  var emptyList = [];
+
+
+
+  for ( row=0; row<=1; row++ ) {
+    for ( col=0; col<=1; col++ ) {
+      if ( field[row*2][col*2] == '' ) {
+        emptyList.push( "cell"+(row*2+1)+"-"+(col*2+1) );
+      }
+    }
+  }
+
+  return emptyList;
+
+}
+
 function countInArray(array, what) {
     var count = 0;
     for (var i = 0; i < array.length; i++) {
@@ -198,7 +217,7 @@ function countInArray(array, what) {
     return count;
 }
 
-function computerPick() {
+function computerPick(moves) {
 
   field = buildMatrix();
   empty_field = findEmpty(field);
@@ -209,6 +228,14 @@ function computerPick() {
 
   var tlDiagArray = [ field[0][0], field[1][1], field[2][2] ],
       trDiagArray = [ field[0][2], field[1][1], field[2][0] ];
+
+  // FIRST TURN: Always select a corner
+  if ( moves == 2 ) {
+    // Check if any corners are occupied.
+    emptyCorners = findEmptyCorner(field);
+    var randIndex = Math.floor(Math.random() * emptyCorners.length);
+    return emptyCorners[randIndex];
+  }
 
   // OFFENSIVE CHECKS FIRST. See if we can win this round!
   for ( var row in field ) {
@@ -269,6 +296,36 @@ function computerPick() {
     if (debug) { console.log("Defense, TR-diag") }
     return "cell"+(trDiagArray.indexOf("")+1)+"-"+(3-trDiagArray.indexOf(""));
   }
+
+
+  // Check for lines with 1 'o' and 2 empty spaces, starting with diagonals. Fill one.
+  if ( countInArray(tlDiagArray, "O") == 1 && countInArray(tlDiagArray, "") == 2 ) {
+    if (debug) { console.log("Strategy, TL-diag") }
+    return "cell"+(tlDiagArray.indexOf("")+1)+"-"+(tlDiagArray.indexOf("")+1);
+  }
+
+  if ( countInArray(trDiagArray, "O") == 1 && countInArray(trDiagArray, "") == 2 ) {
+    if (debug) { console.log("Strategy, TR-diag") }
+    return "cell"+(trDiagArray.indexOf("")+1)+"-"+(3-trDiagArray.indexOf(""));
+  }
+
+  rowCounter = 1;
+  for ( var row in field ) {
+    // ROW - Strategic
+    if ( countInArray(field[row], "O") == 1 && countInArray(field[row], "") == 2 ) {
+      if (debug) { console.log("Strategy, row") }
+      return "cell"+rowCounter+"-"+(field[row].indexOf("")+1);
+    }
+    // COL - Strategic 
+    var columnArray = [field[0][rowCounter-1], field[1][rowCounter-1], field[2][rowCounter-1]];
+    if ( countInArray(columnArray, "O") == 1 && countInArray(columnArray, "") == 2 ) {
+      if (debug) { console.log("Strategy, col") }
+      return "cell"+(columnArray.indexOf("")+1)+"-"+rowCounter;
+    } 
+    rowCounter++;
+  }
+
+
 
   // If all else fails, pick randomly
   var randIndex = Math.floor(Math.random() * empty_field.length);
@@ -344,7 +401,7 @@ $(document).ready(function() {
         
         playerTurn = false;
 
-        chosenCell = computerPick();
+        chosenCell = computerPick(moveCounter);
 
 
         setTimeout( function() {
